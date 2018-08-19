@@ -1,0 +1,8 @@
+unused
+*.pyc
+*.so
+*.pyd
+intraQuarter
+stock_prices.csv
+.DS_Store
+data
