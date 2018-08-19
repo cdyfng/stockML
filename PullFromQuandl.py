@@ -13,7 +13,7 @@ def Stock_Prices():
     statspath = path+'Yahoo/intraQuarter/_KeyStats'
     stock_list = [x[0] for x in os.walk(statspath)]
     print('total', len(stock_list))
-    stock_list = stock_list[-100:]
+    stock_list = stock_list[-10:]
 
     for each_dir in stock_list[1:]:
         try:
@@ -21,7 +21,7 @@ def Stock_Prices():
             ticker = each_dir.split('_KeyStats/')[1]
             print(ticker)
             name = 'WIKI/' + ticker.upper()
-            data = quandl.get(name, trim_start=datetime.strptime('2000-1-1', '%Y-%m-%d'),
+            data = quandl.get(name, trim_start=datetime.strptime('2010-1-1', '%Y-%m-%d'),
                           trim_end=date.today()-timedelta(1),)
                           # authtoken=auth_token
             data[ticker.upper()] = data['Adj. Close']
