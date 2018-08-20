@@ -7,38 +7,39 @@ import re
 
 path = '/Users/fong/work/quant/stockML/data/'
 attributes = {'DE Ratio': 'Total Debt/Equity',
-           'Trailing P/E'                       :'Trailing P/E',
-           'Price/Sales'                        :'Price/Sales',
-           'Price/Book'                         :'Price/Book',
-           'Profit Margin'                      :'Profit Margin',
-           'Operating Margin'                   :'Operating Margin',
-           'Return on Assets'                   :'Return on Assets',
-           'Return on Equity'                   :'Return on Equity',
-           'Revenue Per Share'                  :'Revenue Per Share',
-           'Market Cap'                         :'Market Cap',
-           'Forward P/E'                        :'Forward P/E',
-           'PEG Ratio'                          :'PEG Ratio',
-           'Enterprise Value'                   :'Enterprise Value',
-           'Revenue'                            :'Revenue',
-           'Gross Profit'                       :'Gross Profit',
-           'EBITDA'                             :'EBITDA',
-           'Net Income Avl to Common '          :'Net Income Avl to Common ',
-           'Earnings Per Share'                 :'Earnings Per Share|Diluted EPS',
-           'Earnings Growth'                    :'Earnings Growth',
-           'Revenue Growth'                     :'Revenue Growth',
-           'Total Cash'                         :'Total Cash',
-           'Total Cash Per Share'               :'Total Cash Per Share',
-           'Total Debt'                         :'Total Debt',
-           'Current Ratio'                      :'Current Ratio',
-           'Book Value Per Share'               :'Book Value Per Share',
-           'Operating Cash Flow'                :'From Operations|Operating Cash Flow',
-           'Beta'                               :'Beta',
-           'Held by Insiders'                   :'Held by Insiders',
-           'Held by Institutions'               :'Held by Institutions',
-           'Shares Short'                       :'Shares Short',
-           'Short Ratio'                        :'Short Ratio',
-           'Short % of Float'                   :'Short % of Float'
-          }
+              'Trailing P/E': 'Trailing P/E',
+              'Price/Sales': 'Price/Sales',
+              'Price/Book': 'Price/Book',
+              'Profit Margin': 'Profit Margin',
+              'Operating Margin': 'Operating Margin',
+              'Return on Assets': 'Return on Assets',
+              'Return on Equity': 'Return on Equity',
+              'Revenue Per Share': 'Revenue Per Share',
+              'Market Cap': 'Market Cap',
+              'Forward P/E': 'Forward P/E',
+              'PEG Ratio': 'PEG Ratio',
+              'Enterprise Value': 'Enterprise Value',
+              'Revenue': 'Revenue',
+              'Gross Profit': 'Gross Profit',
+              'EBITDA': 'EBITDA',
+              'Net Income Avl to Common ': 'Net Income Avl to Common ',
+              'Earnings Per Share': 'Earnings Per Share|Diluted EPS',
+              'Earnings Growth': 'Earnings Growth',
+              'Revenue Growth': 'Revenue Growth',
+              'Total Cash': 'Total Cash',
+              'Total Cash Per Share': 'Total Cash Per Share',
+              'Total Debt': 'Total Debt',
+              'Current Ratio': 'Current Ratio',
+              'Book Value Per Share': 'Book Value Per Share',
+              'Operating Cash Flow': 'From Operations|Operating Cash Flow',
+              'Beta': 'Beta',
+              'Held by Insiders': 'Held by Insiders',
+              'Held by Institutions': 'Held by Institutions',
+              'Shares Short': 'Shares Short',
+              'Short Ratio': 'Short Ratio',
+              'Short % of Float': 'Short % of Float'
+              }
+
 
 def getValue(df, attribute, timestamp):
     try:
@@ -48,6 +49,7 @@ def getValue(df, attribute, timestamp):
         return value
     except:
         return None
+
 
 def Key_Stats():
 
@@ -59,11 +61,13 @@ def Key_Stats():
     stock_df = pd.DataFrame.from_csv(path + "Quandl/stock_prices.csv")
     ticker_list = []
 
+    # for each_dir in keystats_screen_paths[1:2]:
     for each_dir in keystats_screen_paths[1:]:
-        keystats_files = glob(os.path.join(each_dir, '[0-9]*'))  # no hidden files
+        keystats_files = glob(os.path.join(
+            each_dir, '[0-9]*'))  # no hidden files
         ticker = each_dir.split("_KeyStats/")[1]
         ticker_list.append(ticker)
-        print ticker
+        print(ticker)
 
         if len(keystats_files) > 0:
             for full_file_path in keystats_files:
@@ -76,26 +80,31 @@ def Key_Stats():
 
                 for feature in features:
                     try:
-                        regex = '(' + feature + ')' + r'.*?\n?\s*?.*?tabledata1">\n?\r?\s*?(-?(\d{1,3},)?\d{1,8}(\.\d{1,8})?M?B?K?|N/A)\%?\n?\r?\s*?</td>'
+                        regex = '(' + feature + ')' + \
+                            r'.*?\n?\s*?.*?tabledata1">\n?\r?\s*?(-?(\d{1,3},)?\d{1,8}(\.\d{1,8})?M?B?K?|N/A)\%?\n?\r?\s*?</td>'
                         value = re.search(regex, html_source)
                         value = (value.group(2))
 
                     except Exception:
                         try:
-                            regex = '(' + feature + ')' + r'.*?\n?\t*?\s*?.*?\n?.*?tabledata1">\n?\r?\s*?(-?(\d{1,3},)?\d{1,8}(\.\d{1,8})?M?B?|N/A)\%?\n?\r?\s*?</td>'
+                            regex = '(' + feature + ')' + \
+                                r'.*?\n?\t*?\s*?.*?\n?.*?tabledata1">\n?\r?\s*?(-?(\d{1,3},)?\d{1,8}(\.\d{1,8})?M?B?|N/A)\%?\n?\r?\s*?</td>'
                             value = re.search(regex, html_source)
                             value = (value.group(2))
                         except:
-                            print 'Warning cannot find %s for ticker %s in file %s. ' % (feature, ticker, filename)
+                            print('Warning cannot find %s for ticker %s in file %s. ' % (
+                                feature, ticker, filename))
                             value = "N/A"
 
                     value_dict[feature] = value
+                    # print(value)
 
                     if ',' in str(value):
                         value = value.replace(',', '')
 
                     if "B" in value:
                         value = float(value.replace("B", '')) * 1000000000.
+                        #print(' B', value)
 
                     elif "M" in value:
                         value = float(value.replace("M", '')) * 1000000.
@@ -103,14 +112,17 @@ def Key_Stats():
                     elif "K" in value:
                         value = float(value.replace("K", '')) * 1000.
 
-                        value_dict[feature] = value
+                    value_dict[feature] = value
 
                 one_year_later = int(unix_time + 31536000)
                 stock_price, sp500_value, stock_1y_value, sp500_1y_value = None, None, None, None
 
                 unix_day = 60 * 60 * 24
-                rolling = [0, -1, -2, -3, 1, 2, 3, -4, -5, 4, 5]  # roll back then forward (then back again)
-                date_roll = lambda timestamp: (int(timestamp + roll_by * unix_day) for roll_by in rolling)
+                # roll back then forward (then back again)
+                rolling = [0, -1, -2, -3, 1, 2, 3, -4, -5, 4, 5]
+
+                def date_roll(timestamp): return (
+                    int(timestamp + roll_by * unix_day) for roll_by in rolling)
 
                 for roll_date in date_roll(unix_time):
                     stock_price = getValue(stock_df, ticker.upper(), roll_date)
@@ -118,42 +130,49 @@ def Key_Stats():
                         break
 
                 for roll_date in date_roll(one_year_later):
-                    stock_1y_value = getValue(stock_df, ticker.upper(), roll_date)
+                    stock_1y_value = getValue(
+                        stock_df, ticker.upper(), roll_date)
                     if stock_1y_value is not None:
                         break
 
                 for roll_date in date_roll(unix_time):
-                    sp500_value = getValue(sp500_df, "Adjusted Close", roll_date)
+                    sp500_value = getValue(
+                        sp500_df, "Adjusted Close", roll_date)
                     if sp500_value is not None:
                         break
 
                 for roll_date in date_roll(one_year_later):
-                    sp500_1y_value = getValue(sp500_df, "Adjusted Close", roll_date)
+                    sp500_1y_value = getValue(
+                        sp500_df, "Adjusted Close", roll_date)
                     if sp500_1y_value is not None:
                         break
 
                 if stock_price is None:
-                    print 'No stock price for ticker %s on date %d' % (ticker, unix_time)
+                    print('No stock price for ticker %s on date %d' %
+                          (ticker, unix_time))
                     stock_price = 'N/A'
                 if stock_1y_value is None:
-                    print 'No stock price for ticker %s on date %d' % (ticker, one_year_later)
+                    print('No stock price for ticker %s on date %d' %
+                          (ticker, one_year_later))
                     stock_1y_value = 'N/A'
                 if sp500_value is None:
-                    print 'No sp500 value on date %d' % unix_time
+                    print('No sp500 value on date %d' % unix_time)
                     sp500_value = 'N/A'
                 if sp500_1y_value is None:
-                    print 'No sp500 value on date %d' % unix_time
+                    print('No sp500 value on date %d' % unix_time)
                     sp500_1y_value = 'N/A'
 
                 stock = [stock_price, stock_1y_value]
                 sp500 = [sp500_value, sp500_1y_value]
                 stock_p_change = 0
-                if not any(True if s=='N/A' else False for s in stock):
-                    stock_p_change = round((((stock_1y_value - stock_price) / stock_price) * 100), 2)
-                if not any(True if s=='N/A' else False for s in sp500):
-                    sp500_p_change = round((((sp500_1y_value - sp500_value) / sp500_value) * 100), 2)
+                if not any(True if s == 'N/A' else False for s in stock):
+                    stock_p_change = round(
+                        (((stock_1y_value - stock_price) / stock_price) * 100), 2)
+                if not any(True if s == 'N/A' else False for s in sp500):
+                    sp500_p_change = round(
+                        (((sp500_1y_value - sp500_value) / sp500_value) * 100), 2)
 
-                if not any(True if s=='N/A' else False for s in stock + sp500):
+                if not any(True if s == 'N/A' else False for s in stock + sp500):
                     difference = stock_p_change - sp500_p_change
                 else:
                     difference = 0.
@@ -175,14 +194,14 @@ def Key_Stats():
                 output_dict['Date'] = date_stamp
                 # output_dict['Status'] = status
 
-                output_dict = dict({k: value_dict[v] for (k, v) in attributes.items()}, **output_dict)
+                output_dict = dict({k: value_dict[v] for (
+                    k, v) in attributes.items()}, **output_dict)
 
                 # nas = sum([1 for (k,v) in output_dict.items() if v == 'N/A'])
 
                 # if nas == 0:
 
                 output_df = output_df.append(output_dict, ignore_index=True)
-
 
     output_df.to_csv("key_stats_acc_perf_WITH_NA.csv")
 
